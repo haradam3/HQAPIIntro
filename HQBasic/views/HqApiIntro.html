@@ -1,0 +1,173 @@
+﻿<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>HQ Basic</title>
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <link rel="stylesheet" href="/stylesheets/HqApiIntro.css" type="text/css" />
+</head>
+<body>
+    <div class="groupTitle">
+        <h1>My First HQ API</h1>
+    </div>
+    <!-- 2-legged oauth -->
+    <div class="group1">
+        <form>
+            <label for="token2leg"> Token 2-leg </label>
+            <input id="token2leg" type="text" name="token2leg" /> &nbsp;
+            <button type="button" onclick="buttonToken2legClicked()">Get Token</button> 
+        </form>
+    </div>
+
+    <!-- account id, companies button -->
+    <div class="group1">
+        <label for="accountId"> Account ID </label>
+        <input id="accountId" type="text" name="accountId" placeholder="Copy from UI Account Settings"/> &nbsp;
+        <button type="button" onclick="buttonCompanyClicked()">Companies</button> 
+    </div>
+
+    <!-- company listing and data button -->
+    <div class="group1">
+        <label for="company">Company</label>
+        <select id="company" name="company"></select> &nbsp;
+        <button type="button" onclick="buttonCompanyDataClicked()">Data</button>
+    </div>
+
+    <!-- company data update -->
+    <div class="group1">
+        <label for="companyUpdate"> New Data </label>
+        <input id="companyUpdate" type="text" name="companyUpdate" /> &nbsp;
+        <button type="button" onclick="buttonCompanyUpdateClicked()">Update</button>
+    </div>
+
+    <!-- show response/data -->
+    <div class="group2">
+        Response/Data<br />
+        <textarea id="response" name="response" rows="10" cols="55"></textarea>
+    </div>
+
+    <script>
+        // save company data 
+        var g_companies = null; 
+
+        // 2-legged for HQ 
+        // 
+        function buttonToken2legClicked() {
+            clearResponse();
+
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    // Received response. 
+                    console.log("POST /token2leg response: " + this.response + "\n this status: " + this.status);
+                    displayResponse(this.response); 
+                    // show the token in the token text box
+                    var jsonObj = JSON.parse(this.response);
+                    $("#token2leg").val(jsonObj.access_token);
+                }
+            }
+
+            xhttp.open("POST", "/token2leg", true);
+            xhttp.send();
+            console.log("POST /token2leg send");
+        }
+
+        // Helper functions to display the response and also data. 
+        function displayResponse(response) {
+            // Update the response areas
+            $("#response").html(response);
+        }
+        function clearResponse() {
+            // Update the response areas
+            $("#response").html("response area ...");
+        }
+
+        // Get a list of companies 
+        function buttonCompanyClicked() {
+            clearResponse();
+
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    // Received response. 
+                    console.log("POST /company response: " + this.response + "\n this status: " + this.status);
+                    displayResponse(this.response);
+                    g_companies = JSON.parse(this.response);
+                    processCompanies(g_companies); 
+                }
+            }
+
+            var accountId = $("#accountId").val();
+            var data = { account_id: accountId };
+
+            xhttp.open("POST", "/company", true);
+            xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            xhttp.send(JSON.stringify(data));
+            console.log("POST /company sent");
+        }
+
+        // set a selection box with company names.
+        function processCompanies(companies) {
+            // get hold of the company selection element 
+            var sel = document.getElementById("company");
+            // clear the previous list 
+            while (sel.options.length) {
+                sel.remove(0); 
+            }
+            // set a new set of selection 
+            var len = companies.length; 
+            for(var i=0; i<len; i++ ) {
+                var opt = document.createElement("option");
+                opt.text = companies[i].name;
+                opt.value = i; 
+                sel.options.add(opt, i); 
+            }
+        }
+
+        // Display a company data currently selected.
+        // This is to help set a new data in the next step.
+        function buttonCompanyDataClicked() {
+            var sel = document.getElementById("company");
+            var iSel = sel.selectedIndex;
+            var text = JSON.stringify(g_companies[iSel], null, '\t');
+            displayResponse(text); 
+        }
+
+        // Update a company record. 
+        function buttonCompanyUpdateClicked() {
+            clearResponse();
+
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    // Received response. 
+                    console.log("POST /company response: " + this.response + "\n this status: " + this.status);
+                    displayResponse(this.response);
+                }
+            }
+
+            // Set the data 
+            var accountId = $("#accountId").val();
+            var sel = document.getElementById("company");
+            var iSel = sel.selectedIndex; 
+            var company_id = g_companies[iSel].id; 
+            var newData = $("#companyUpdate").val();
+
+            var data = {
+                account_id: accountId,
+                company_id: company_id, 
+                newData: newData
+            };
+
+            // Make a REST call 
+            xhttp.open("PATCH", "/companyUpdate", true);
+            xhttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+            xhttp.send(JSON.stringify(data));
+            console.log("PATCH /companyUpdate sent");
+        }
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,16 @@
+{
+  "name": "hqbasic",
+  "version": "0.0.0",
+  "description": "HQBasic",
+  "main": "app.js",
+  "author": {
+    "name": "haradam",
+    "email": ""
+  },
+  "dependencies": {
+    "express": "3.4.4",
+    "jade": "*",
+    "request": "^2.79.0",
+    "stylus": "*"
+  }
+}
