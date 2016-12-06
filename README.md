@@ -1,4 +1,4 @@
-# HQAPIIntro
+# HQ API Intro
 The minimum sample project for HQ API.
 
 Please look at explanation here: 
