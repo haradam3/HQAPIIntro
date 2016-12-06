@@ -36,7 +36,7 @@
     <Compile Include="routes\forge_hq.js" />
     <Compile Include="routes\index.js" />
     <Compile Include="routes\user.js" />
-    <None Include="HQBasic1204 - Web Deploy.pubxml" />
+    <None Include="HQBasic - Web Deploy.pubxml" />
     <Content Include="package.json" />
     <Content Include="public\stylesheets\HqApiIntro.css" />
     <Content Include="public\stylesheets\style.styl" />
