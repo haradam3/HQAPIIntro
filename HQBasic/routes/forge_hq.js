@@ -58,7 +58,6 @@ exports.authenticate= function (req, res) {
     
     request(options, function (error, response, body) {
         if (error) throw new Error(error);
-        // console.log(body);
         
         var ticket = "";
         var jsonObj = JSON.parse(body);
@@ -82,7 +81,7 @@ exports.authenticate= function (req, res) {
 
 exports.company = function (req, res) {
     var body = req.body; 
-    var method = 'GET'; // body.method; 
+    var method = 'GET';  
     var account_id = body.account_id;
     var url = _baseUrl + 'hq/v1/accounts/' + account_id + '/companies';
     
@@ -117,7 +116,7 @@ exports.company = function (req, res) {
 
 exports.companyUpdate = function (req, res) {
     var body = req.body;
-    var method = 'PATCH'; // body.method; 
+    var method = 'PATCH';  
     var account_id = body.account_id;
     var company_id = body.company_id; 
     var url = _baseUrl + 'hq/v1/accounts/' + account_id + '/companies/' + company_id;
